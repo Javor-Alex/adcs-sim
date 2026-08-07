@@ -1,0 +1,1 @@
+This is a project simulating a satellite's ADCS with Quaternion kinematics, a simple orbit and magnetic field model, simulated magnetometer and gyroscope readings with noise, an extended Kalman filter estimating attitude, a B-dot detumbling controller driving simulated magnetorquers. The goal is to model ELECTRA's ADCS.
