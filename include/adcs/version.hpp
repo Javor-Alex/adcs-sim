@@ -1,4 +1,7 @@
 #pragma once
+
 namespace adcs {
-const char* version();
+
+    const char* version();
+
 }
