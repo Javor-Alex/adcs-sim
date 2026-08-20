@@ -12,13 +12,32 @@ target_include_directories(adcs_core PUBLIC include)
 add_executable(sim src/main.cpp)
 target_link_libraries(sim PRIVATE adcs_core)
 
+add_executable(scratch scratch/main.cpp)
+target_link_libraries(scratch PRIVATE adcs_core)
+
 include(FetchContent)
+
 FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG        v3.5.2
 )
 FetchContent_MakeAvailable(Catch2)
+
+FetchContent_Declare(
+  Eigen
+  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+  GIT_TAG        3.4.1
+  GIT_SHALLOW    TRUE
+)
+
+set(EIGEN_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_DOC     OFF CACHE BOOL "" FORCE)
+set(EIGEN_BUILD_PKGCONFIG OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(Eigen)
+
+target_link_libraries(adcs_core PUBLIC Eigen3::Eigen)
 
 enable_testing()
 add_subdirectory(tests)
