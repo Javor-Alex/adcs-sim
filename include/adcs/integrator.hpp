@@ -2,16 +2,13 @@
 
 namespace adcs {
 
-    template <typename F>
-    double step(double x, double t, double dt, F f){
-
-        //rk4 method
-        double k1 = f(x, t);
-        double k2 = f(x + dt*k1/2, t + dt/2);
-        double k3 = f(x + dt*k2/2, t + dt/2);
-        double k4 = f(x + dt*k3, t + dt);
-
-        return x + dt*(k1 + 2*k2 + 2*k3 + k4)/6;
-    }
+    template<typename State, typename Derivative>
+    State rk4Step(const State& x, double t, double dt, Derivative f) {
+        State k1 = f(x, t);
+        State k2 = f(x + 0.5*dt*k1, t + 0.5*dt);
+        State k3 = f(x + 0.5*dt*k2, t + 0.5*dt);
+        State k4 = f(x + dt*k3, t + dt);
+        return x + (dt/6.0)*(k1 + 2.0*k2 + 2.0*k3 + k4);
+}
 
 }

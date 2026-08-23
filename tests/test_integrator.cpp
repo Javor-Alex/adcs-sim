@@ -22,7 +22,7 @@ static double max_error(double dt) {
             max_err = err;
         }
 
-        x = adcs::step(x, t, dt, f);
+        x = adcs::rk4Step(x, t, dt, f);
     }
 
     return max_err;

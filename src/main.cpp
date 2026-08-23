@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 
         data << t << "," << x << '\n';
 
-        x = adcs::step(x, t, dt, f);
+        x = adcs::rk4Step(x, t, dt, f);
     }
 
     return 0;
