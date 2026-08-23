@@ -25,13 +25,13 @@ TEST_CASE("orthogonality") {
     REQUIRE(std::fabs(a.dot(bxa)) < 1e-12 * a.norm() * bxa.norm());
 }
 
-TEST_CASE("normalization") {
+TEST_CASE("vector normalization") {
     REQUIRE(b.normalized().norm() == Catch::Approx(1.0).epsilon(1e-12));
     REQUIRE(c.normalized().norm() == Catch::Approx(1.0).epsilon(1e-12));
     REQUIRE(d.normalized().norm() == Catch::Approx(1.0).epsilon(1e-12));
 }
 
-TEST_CASE("compound vs binary operations") {
+TEST_CASE("vector compound vs binary operations") {
     a1 = a;
     REQUIRE((a1 += b) == a + b);
     a1 = a;

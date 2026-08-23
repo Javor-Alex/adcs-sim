@@ -7,4 +7,5 @@ build/
 .vscode/
 data/*.csv
 COULDIMPROVE.md
+CLAUDE.md
 scratch/

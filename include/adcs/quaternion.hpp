@@ -10,7 +10,9 @@
 namespace adcs {
 
     struct Quaternion{
-        double w, x, y, z;
+        double w = 1.0, x = 0.0, y = 0.0, z = 0.0;
+
+        constexpr Quaternion() = default;
 
         constexpr Quaternion(double w_, double x_, double y_, double z_)
             : w(w_), x(x_), y(y_), z(z_) {}
@@ -43,6 +45,15 @@ namespace adcs {
             x *= scalar;
             y *= scalar;
             z *= scalar;
+            return *this;
+        }
+
+        constexpr Quaternion& operator/=(double scalar) {
+            assert(scalar != 0 && "DIVISION BY ZERO");
+            w /= scalar;
+            x /= scalar;
+            y /= scalar;
+            z /= scalar;
             return *this;
         }
 
@@ -85,7 +96,15 @@ namespace adcs {
             return ((*this)*(v_quat)*(conjugate())).vec();
         }
 
+        constexpr bool isApprox(const Quaternion& q, double tol = 1e-12) const {
+            return (*this - q).normSquared() <= tol*tol;
+        }
+
         Vec3 axis() const {
+            if (w < 0) {
+                Quaternion neg_q{-w, -x, -y, -z};
+                return neg_q.vec().normalized();
+            }
             return vec().normalized();
         }
 
@@ -110,11 +129,11 @@ namespace adcs {
             return R;
         }
 
+        //FREE FUNCTIONS
+
         friend std::ostream& operator<<(std::ostream& os, const Quaternion& q) {
             return os << "[" << q.w << ", " << q.x << ", " << q.y << ", " << q.z << "]";
         }
-
-        //FREE FUNCTIONS
 
         friend constexpr Quaternion operator+(Quaternion lhs, const Quaternion& rhs) {
             lhs += rhs;
@@ -136,6 +155,18 @@ namespace adcs {
             return rhs;
         }
 
+        friend constexpr Quaternion operator/(Quaternion lhs, double scalar) {
+            lhs /= scalar;
+            return lhs;
+        }
+
+        friend bool operator==(const Quaternion& lhs, const Quaternion& rhs) {
+            return lhs.w == rhs.w && lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+        }
+
+        friend bool operator!=(const Quaternion& lhs, const Quaternion& rhs) {
+            return !(lhs == rhs);
+        }
     };
 
     inline Quaternion quatFromAngleAxis(double angle, const Vec3& axis) {

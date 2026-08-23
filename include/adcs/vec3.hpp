@@ -2,6 +2,7 @@
 #include <cassert>
 #include <ostream>
 #include <cmath>
+#include <Eigen/Dense>
 
 namespace adcs {
 
@@ -81,6 +82,10 @@ namespace adcs {
             return *this/norm();
         }
 
+        constexpr bool isApprox(const Vec3& v, double tol = 1e-12) const {
+            return (*this - v).normSquared() <= tol*tol;
+        }
+
         //FREE FUNCTIONS
 
         friend constexpr Vec3 operator+(Vec3 lhs, const Vec3& rhs) {
@@ -120,6 +125,18 @@ namespace adcs {
         }
 
     };
+
+    inline Eigen::Vector3d toEigen(const Vec3& v) {
+        return Eigen::Vector3d{v.x, v.y, v.z};
+    }
+
+    inline Vec3 fromEigen(const Eigen::Vector3d& v) {
+        return Vec3{v(0), v(1), v(2)};
+    }
+
+    inline Vec3 operator*(const Eigen::Matrix3d& R, const Vec3& v) {
+        return fromEigen(R * toEigen(v));
+    }
 
     inline constexpr Vec3 unitX{1.0, 0.0, 0.0};
     inline constexpr Vec3 unitY{0.0, 1.0, 0.0};
