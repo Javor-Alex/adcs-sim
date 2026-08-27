@@ -121,7 +121,7 @@ namespace adcs {
         }
 
         friend std::ostream& operator<<(std::ostream& os, const Vec3& vec) {
-            return os << "[" << vec.x << ", " << vec.y << ", " << vec.z << "]";
+            return os << vec.x << ", " << vec.y << ", " << vec.z;
         }
 
     };

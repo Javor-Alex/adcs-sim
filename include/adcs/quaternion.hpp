@@ -24,7 +24,7 @@ namespace adcs {
             return Vec3{x, y, z};
         }
 
-        constexpr Quaternion& operator+=(const Quaternion& rhs) {
+        constexpr Quaternion& operator+=(const Quaternion& rhs) { //geometically meaningless, just needed for rk4
             w += rhs.w;
             x += rhs.x;
             y += rhs.y;
@@ -132,10 +132,10 @@ namespace adcs {
         //FREE FUNCTIONS
 
         friend std::ostream& operator<<(std::ostream& os, const Quaternion& q) {
-            return os << "[" << q.w << ", " << q.x << ", " << q.y << ", " << q.z << "]";
+            return os << q.w << ", " << q.x << ", " << q.y << ", " << q.z;
         }
 
-        friend constexpr Quaternion operator+(Quaternion lhs, const Quaternion& rhs) {
+        friend constexpr Quaternion operator+(Quaternion lhs, const Quaternion& rhs) { //geometically meaningless, just needed for rk4
             lhs += rhs;
             return lhs;
         }
