@@ -10,20 +10,23 @@
 
 int main(int argc, char* argv[]) {
     double dt = (argc > 1) ? std::stod(argv[1]) : 0.1;
-    std::string out = (argc > 2) ? argv[2] : "data/test1.csv";
+    std::string out = (argc > 2) ? argv[2] : "data/test3.csv";
     
     double t = 0;
-    double t_end = 1000;
+    double t_end = 60;
 
-    Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
+    Eigen::Matrix3d I;
+    I << 1, 0, 0,
+        0, 2, 0,
+        0, 0, 3;
 
     adcs::Vec3 tau{0, 0, 0};
 
-    adcs::RigidBody sphere{I, tau};
+    adcs::RigidBody sat{I, tau};
 
     adcs::Quaternion q{1, 0, 0, 0};
 
-    adcs::Vec3 w{0, 0, 1};
+    adcs::Vec3 w{1e-3, 1, 1e-3};
 
     adcs::RigidBodyState state{q, w};
 
@@ -43,7 +46,7 @@ int main(int argc, char* argv[]) {
 
         data << t << "," << state.q << "," << state.w << '\n';
 
-        state = adcs::rk4Step(state, t, dt, sphere);
+        state = adcs::rk4Step(state, t, dt, sat);
 
         state.q.normalize();
     }

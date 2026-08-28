@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description="given a csv file, plot one column 
 
 parser.add_argument("csv_filepath", type=str, help="filepath of the CSV file relative to adcs-sim directory")
 parser.add_argument("-x", type=str, default="t", help="the x-axis values of the plot")
-parser.add_argument("-y", nargs="+", default=["x"], help="one or more y-axis values")
+parser.add_argument("-y", nargs="+", default=["qw"], help="one or more y-axis values")
 
 parser.add_argument("-r", "--reference", type=str, help="optional reference curve. e: exp(-t) cos: cos(t/2)")
 
