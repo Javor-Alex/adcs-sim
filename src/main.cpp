@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[]) {
     double dt = (argc > 1) ? std::stod(argv[1]) : 0.1;
-    std::string out = (argc > 2) ? argv[2] : "data/test3.csv";
+    std::string out = (argc > 2) ? argv[2] : "data/test.csv";
     
     double t = 0;
     double t_end = 60;
@@ -19,14 +19,13 @@ int main(int argc, char* argv[]) {
     I << 1, 0, 0,
         0, 2, 0,
         0, 0, 3;
-
     adcs::Vec3 tau{0, 0, 0};
 
     adcs::RigidBody sat{I, tau};
 
     adcs::Quaternion q{1, 0, 0, 0};
-
-    adcs::Vec3 w{1e-3, 1, 1e-3};
+    double eps = 1e-3;
+    adcs::Vec3 w{eps, 1, eps};
 
     adcs::RigidBodyState state{q, w};
 

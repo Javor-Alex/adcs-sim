@@ -20,6 +20,10 @@ parser.add_argument("-r", "--reference", type=str, help="optional reference curv
 
 parser.add_argument("-s", "--save", type=str, default=None, help="type a name and it will be stored in docs\\plots")
 
+parser.add_argument("--xlabel", type=str, default=None, help="x-axis label, e.g. \"t [s]\"")
+parser.add_argument("--ylabel", type=str, default=None, help="y-axis label, e.g. \"omega [rad/s]\"")
+parser.add_argument("--ylim", nargs=2, type=float, default=None, metavar=("MIN", "MAX"), help="fix the y-axis range so plots are comparable")
+
 args = parser.parse_args()
 
 csv_path = from_root(args.csv_filepath)
@@ -33,7 +37,7 @@ y = df[args.y]
 # change maybe:
 plt.style.use("ggplot")
 
-fig, ax = plt.subplots(figsize=(8,5))
+fig, ax = plt.subplots(figsize=(12,6))
 
 for col in args.y:
     ax.plot(x, df[col], marker="o" if len(x) < 500 else None, label=col)
@@ -44,8 +48,12 @@ if args.reference:
     if args.reference == "cos":
         ax.plot(x, np.cos(x/2), "g--", label="cos(t/2)")
 
-ax.set_xlabel(f"{args.x} values")
-ax.set_ylabel(f"{", ".join(args.y)} values")
+ax.set_xlabel(args.xlabel or f"{args.x} values")
+ax.set_ylabel(args.ylabel or ", ".join(args.y) + " values")
+
+if args.ylim:
+    ax.set_ylim(*args.ylim)
+
 ax.legend()
 
 ax.grid(True, alpha=0.3)

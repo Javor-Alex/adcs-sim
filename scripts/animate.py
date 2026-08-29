@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.animation import FuncAnimation, PillowWriter
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from matplotlib.colors import to_rgb
+from mpl_toolkits.mplot3d.art3d import Line3DCollection, Poly3DCollection
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -30,6 +31,7 @@ parser.add_argument("csv_filepath", help="attitude log, relative to project root
 parser.add_argument("--speed", type=float, default=1.0, help="playback speed multiplier (default: 1 = real time)")
 parser.add_argument("--size", nargs=3, type=float, metavar=("A", "B", "C"), default=[1.0, 0.7, 0.4], help="box side lengths")
 parser.add_argument("--inertia", nargs=3, type=float, metavar=("I1", "I2", "I3"), help="principal moments of inertia; enables the L arrow")
+parser.add_argument("--trail", type=int, nargs="?", const=60, metavar="N", help="fading trail of the last N frames behind each axis tip (default: 60)")
 parser.add_argument("--save", metavar="NAME", help="write a GIF to docs/plots/NAME instead of showing")
 args = parser.parse_args()
 
@@ -49,6 +51,7 @@ interval_ms = stride * dt * 1000.0 / args.speed
 
 times = df["t"].to_numpy()
 quats = df[["qw", "qx", "qy", "qz"]].to_numpy()
+mats = np.array([quat_to_matrix(*q) for q in quats])
 corners = CORNERS * (np.array(args.size) / 2.0 / max(args.size))
 
 l_body = None
@@ -66,8 +69,16 @@ ax.set_box_aspect([1, 1, 1])
 box = Poly3DCollection([], facecolor="tab:orange", edgecolor="dimgray", alpha=0.13, linewidths=0.8, zorder=0)
 ax.add_collection3d(box)
 
-axes = [ax.plot([], [], [], color=c, lw=2.5, marker="o", markevery=[-1], label=l, zorder=5)[0] 
-        for c, l in zip(("tab:red", "tab:green", "tab:blue"), ("body x", "body y", "body z"))]
+AXIS_COLORS = ("tab:red", "tab:green", "tab:blue")
+axes = [ax.plot([], [], [], color=c, lw=2.5, marker="o", markevery=[-1], label=l, zorder=5)[0]
+        for c, l in zip(AXIS_COLORS, ("body x", "body y", "body z"))]
+
+trails = None
+if args.trail:
+    trails = [Line3DCollection(np.zeros((1, 2, 3)), linewidths=1.4, zorder=4) for _ in axes]
+    for t in trails:
+        ax.add_collection3d(t)
+    trail_rgb = [to_rgb(c) for c in AXIS_COLORS]
 l_line = None
 if l_body is not None:
     l_line, = ax.plot([], [], [], color="black", lw=2.0, ls="--", marker="o", markevery=[-1], label="L (scaled)", zorder=6)
@@ -77,13 +88,22 @@ ax.legend(loc="upper right", fontsize=9)
 
 
 def update(k):
-    R = quat_to_matrix(*quats[k])
+    R = mats[k]
     for j, line in enumerate(axes):
         tip = R[:, j]
         line.set_data([0, tip[0]], [0, tip[1]])
         line.set_3d_properties([0, tip[2]])
     v = corners @ R.T
     box.set_verts([[v[i] for i in face] for face in FACES])
+
+    if trails is not None:
+        pts = mats[max(0, k - args.trail):k + 1]
+        for j, tc in enumerate(trails):
+            path = pts[:, :, j]
+            segs = np.stack([path[:-1], path[1:]], axis=1)
+            tc.set_segments(segs)
+            alpha = np.linspace(0.0, 0.7, len(segs))
+            tc.set_color(np.column_stack([np.tile(trail_rgb[j], (len(segs), 1)), alpha]))
 
     text = f"t   = {times[k]:8.2f} s"
     if l_line is not None:
@@ -93,7 +113,6 @@ def update(k):
         text += f"\n|L| = {l_norms[k]:.12f}"
     clock.set_text(text)
     return ()
-
 
 anim = FuncAnimation(fig, update, frames=len(df), interval=interval_ms, blit=False)
 

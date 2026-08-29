@@ -1,4 +1,4 @@
 #include <adcs/version.hpp>
 namespace adcs {
-const char* version() { return "adcs-sim 0.0.1"; }
+const char* version() { return "adcs-sim 0.1.0"; }
 }

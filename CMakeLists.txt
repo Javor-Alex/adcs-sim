@@ -12,9 +12,6 @@ target_include_directories(adcs_core PUBLIC include)
 add_executable(sim src/main.cpp)
 target_link_libraries(sim PRIVATE adcs_core)
 
-add_executable(scratch scratch/main.cpp)
-target_link_libraries(scratch PRIVATE adcs_core)
-
 include(FetchContent)
 
 FetchContent_Declare(
